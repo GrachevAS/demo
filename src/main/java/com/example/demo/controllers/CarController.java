@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.model.dto.request.CarToUserRequest;
 import com.example.demo.model.dto.response.CarInfoResponse;
 import com.example.demo.service.CarService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,10 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static com.example.demo.constants.Constants.CARS;
 
@@ -54,8 +56,29 @@ public class CarController {
             @ApiResponse(responseCode = "401", description = "Не авторизован"),
     })
     @Operation(summary = "Получить список автомобилей")
-    public List<CarInfoResponse> getAllCars(){
-        return carService.getAllCars();
+    public Page<CarInfoResponse> getAllCars(@RequestParam(defaultValue = "1") Integer page,
+                                            @RequestParam(defaultValue = "10") Integer perPage,
+                                            @RequestParam(defaultValue = "brand") String sort,
+                                            @RequestParam(defaultValue = "ASC") Sort.Direction order,
+                                            @RequestParam(required = false) String filter
+    ) {
+        return carService.getAllCars(page, perPage, sort, order, filter);
     }
+
+    @PostMapping("/carToUser")
+    @Operation(summary = "Добавить автомобиль пользователя")
+    public void addCar(@RequestBody @Valid CarToUserRequest request) {
+        carService.addCarToUser(request);
+    }
+
+//    @Operation(summary = "Получить список автомобилей по пользователю")
+//    public Page<CarInfoResponse> getCarsByUser(@RequestParam(defaultValue = "1") Integer page,
+//                                                @RequestParam(defaultValue = "10") Integer perPage,
+//                                                @RequestParam(defaultValue = "brand") String sort,
+//                                                @RequestParam(defaultValue = "ASC") Sort.Direction order,
+//                                                @RequestParam(required = false) String filter
+//    ) {
+//        return carService.getCarsByUser(page, perPage, sort, order, filter);
+//    }
 
 }

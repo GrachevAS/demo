@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.model.dto.response.CarInfoResponse;
 import com.example.demo.model.dto.response.UserInfoResponse;
 import com.example.demo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -46,6 +50,7 @@ public class UserController {
     public void deleteUser (@PathVariable Long id){
         userService.deleteUser(id);
     }
+
     @GetMapping("/all")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успех"),
@@ -54,7 +59,18 @@ public class UserController {
     })
     @Operation(summary = "Получить список пользователей")
     public List<UserInfoResponse> getAllUsers(){
+
         return userService.getAllUsers();
     }
 
+//    @Operation(summary = "Получить список автомобилей по пользователю")
+//    @GetMapping("/{id}/cars") // id пользователя, далее  все автомобили и отфильтровать все автомобили по user_id
+//    public Page<UserInfoResponse> getCarsByUser(@RequestParam(defaultValue = "1") Integer page,
+//                                             @RequestParam(defaultValue = "10") Integer perPage,
+//                                             @RequestParam(defaultValue = "brand") String sort,
+//                                             @RequestParam(defaultValue = "ASC") Sort.Direction order,
+//                                             @RequestParam(required = false) String filter
+//    ) {
+//        return userService.(page, perPage, sort, order, filter);
+//    }
 }

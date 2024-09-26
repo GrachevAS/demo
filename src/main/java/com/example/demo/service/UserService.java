@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.CustomException;
 import com.example.demo.model.db.entity.Car;
 import com.example.demo.model.db.entity.User;
 import com.example.demo.model.db.repository.UserRepository;
+import com.example.demo.model.dto.request.UserInfoRequest;
 import com.example.demo.model.dto.response.CarInfoResponse;
 import com.example.demo.model.dto.response.UserInfoResponse;
 import com.example.demo.model.enums.UserStatus;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,9 +30,12 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserInfoResponse createUser(UserInfoResponse request) {
-        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
-            return null;
-        }
+        validateEmail(request);
+
+        userRepository.findByEmailIgnoreCase(request.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomException(String.format("User with email: %s already exist", request.getEmail()), HttpStatus.CONFLICT);
+                });
 
         User user = mapper.convertValue(request, User.class);
         user.setCreatedAt(LocalDateTime.now());
@@ -40,19 +46,23 @@ public class UserService {
         return mapper.convertValue(save, UserInfoResponse.class);
     }
 
+    private void validateEmail(UserInfoRequest request) {
+        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
+            throw new CustomException("Invalid email format", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     public UserInfoResponse getUser(Long id) {
         User user = getUserFromDB(id);
         return mapper.convertValue(user, UserInfoResponse.class);
     }
 
-    private User getUserFromDB(Long id) {
-        return userRepository.findById(id).orElse(new User()); //new user только для примера, будем кидать исключение
+    public User getUserFromDB(Long id) {
+        return userRepository.findById(id).orElseThrow(()-> new CustomException("User not found", HttpStatus.NOT_FOUND)); //Ранее Был new user для примера, далее будем кидать исключение
     }
 
     public UserInfoResponse updateUser(Long id, UserInfoResponse request) {
-        if (!EmailValidator.getInstance().isValid(request.getEmail())) {
-            return null;
-        }
+        validateEmail(request);
 
         User user = getUserFromDB(id);
 
@@ -81,9 +91,12 @@ public class UserService {
     }
 
     public List<UserInfoResponse> getAllUsers() {
-
         return userRepository.findAll().stream()
                 .map(user ->mapper.convertValue(user, UserInfoResponse.class))
                 .collect(Collectors.toList());
+    }
+
+    public User updateUserData(User user) {
+        return userRepository.save(user);
     }
 }
