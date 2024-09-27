@@ -62,15 +62,4 @@ public class UserController {
 
         return userService.getAllUsers();
     }
-
-//    @Operation(summary = "Получить список автомобилей по пользователю")
-//    @GetMapping("/{id}/cars") // id пользователя, далее  все автомобили и отфильтровать все автомобили по user_id
-//    public Page<UserInfoResponse> getCarsByUser(@RequestParam(defaultValue = "1") Integer page,
-//                                             @RequestParam(defaultValue = "10") Integer perPage,
-//                                             @RequestParam(defaultValue = "brand") String sort,
-//                                             @RequestParam(defaultValue = "ASC") Sort.Direction order,
-//                                             @RequestParam(required = false) String filter
-//    ) {
-//        return userService.(page, perPage, sort, order, filter);
-//    }
 }

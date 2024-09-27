@@ -58,7 +58,7 @@ public class UserService {
     }
 
     public User getUserFromDB(Long id) {
-        return userRepository.findById(id).orElseThrow(()-> new CustomException("User not found", HttpStatus.NOT_FOUND)); //Ранее Был new user для примера, далее будем кидать исключение
+        return userRepository.findById(id).orElseThrow(()-> new CustomException("User not found", HttpStatus.NOT_FOUND)); //Попробовать с id
     }
 
     public UserInfoResponse updateUser(Long id, UserInfoResponse request) {

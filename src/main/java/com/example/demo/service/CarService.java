@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,39 +111,15 @@ public class CarService {
         return carRepository.getSomeCar(true);
     }
 
-//    public Page<CarInfoResponse> getUserCars(Integer page, Integer perPage, String sort, Sort.Direction order, String filter) {
-//
-//        Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
-//
-//        Page<Car> userCars;
-//        if (filter == null) {
-//            userCars = carRepository.findA(pageRequest, CarStatus.DELETED);
-//        } else {
-//            userCars = carRepository.findAllByStatusNotFiltered(pageRequest, CarStatus.DELETED, filter.toLowerCase());
-//        }
-//        List<CarInfoResponse> content = userCars.getContent().stream()
-//                .map(car -> mapper.convertValue(car, CarInfoResponse.class))
-//                .collect(Collectors.toList());
-//
-//        return new PageImpl<>(content, pageRequest, userCars.getTotalElements());
+    public List <CarInfoResponse> getCarsByUser(Long id) {
+        User user = userService.getUserFromDB(id);
 
-//    }
+        return user.getCars().stream()
+                .map(car -> mapper.convertValue(car, CarInfoResponse.class))
+                .collect(Collectors.toList());
 
-//    public Page<CarInfoResponse> getCarsByUser(Integer page, Integer perPage, String sort, Sort.Direction order, String filter) {
-//
-//        Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
-//
-//        Page<Car> userCars;
-//        if (filter == null) {
-//            userCars = carRepository;
-//        } else {
-//            userCars = carRepository.findAllByStatusNotFiltered(pageRequest, CarStatus.DELETED, filter.toLowerCase());
-//        }
-//        List<CarInfoResponse> content = userCars.getContent().stream()
-//                .map(car -> mapper.convertValue(car, CarInfoResponse.class))
-//                .collect(Collectors.toList());
-//
-//        return new PageImpl<>(content, pageRequest, userCars.getTotalElements());
-//    }
+
+    }
 }
+
 

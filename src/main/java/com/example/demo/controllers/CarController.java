@@ -11,13 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
+import java.util.List;
 
 import static com.example.demo.constants.Constants.CARS;
 
 @Tag(name = "Автомобили")
-
 @RestController
 @RequestMapping(CARS)
 @RequiredArgsConstructor
@@ -71,14 +70,9 @@ public class CarController {
         carService.addCarToUser(request);
     }
 
-//    @Operation(summary = "Получить список автомобилей по пользователю")
-//    public Page<CarInfoResponse> getCarsByUser(@RequestParam(defaultValue = "1") Integer page,
-//                                                @RequestParam(defaultValue = "10") Integer perPage,
-//                                                @RequestParam(defaultValue = "brand") String sort,
-//                                                @RequestParam(defaultValue = "ASC") Sort.Direction order,
-//                                                @RequestParam(required = false) String filter
-//    ) {
-//        return carService.getCarsByUser(page, perPage, sort, order, filter);
-//    }
-
+    @GetMapping("/user/{id}")
+    @Operation(summary = "Получить список автомобилей по пользователю")
+    public List<CarInfoResponse> getCarsByUser(@PathVariable Long id){
+        return carService.getCarsByUser(id);
+    }
 }
