@@ -15,6 +15,7 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,7 @@ public class UserService {
     private final ObjectMapper mapper;
     private final UserRepository userRepository;
 
-    public UserInfoResponse createUser(UserInfoResponse request) {
+    public UserInfoResponse createUser(@Valid UserInfoRequest request) {
         validateEmail(request);
 
         userRepository.findByEmailIgnoreCase(request.getEmail())
@@ -39,7 +40,7 @@ public class UserService {
 
         User user = mapper.convertValue(request, User.class);
         user.setCreatedAt(LocalDateTime.now());
-        user.setStatus(UserStatus.CREATED);
+         user.setStatus(UserStatus.CREATED);
 
         User save = userRepository.save(user);
 
@@ -61,8 +62,13 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(()-> new CustomException("User not found", HttpStatus.NOT_FOUND)); //Попробовать с id
     }
 
-    public UserInfoResponse updateUser(Long id, UserInfoResponse request) {
+    public UserInfoResponse updateUser(Long id, @Valid UserInfoRequest request) {
         validateEmail(request);
+
+        userRepository.findByEmailIgnoreCase(request.getEmail())
+                .ifPresent(userEntity -> {
+                    throw new CustomException(String.format("User with email: %s already exists", request.getEmail()), HttpStatus.BAD_REQUEST);
+                });
 
         User user = getUserFromDB(id);
 

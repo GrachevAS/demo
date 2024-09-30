@@ -4,6 +4,7 @@ import com.example.demo.exceptions.CustomException;
 import com.example.demo.model.db.entity.Car;
 import com.example.demo.model.db.entity.User;
 import com.example.demo.model.db.repository.CarRepository;
+import com.example.demo.model.dto.request.CarInfoRequest;
 import com.example.demo.model.dto.request.CarToUserRequest;
 import com.example.demo.model.dto.response.CarInfoResponse;
 import com.example.demo.model.dto.response.UserInfoResponse;
@@ -36,8 +37,9 @@ public class CarService {
     private final CarRepository carRepository;
     private final ObjectMapper mapper;
 
-    public CarInfoResponse createCar(CarInfoResponse request) {
+    public CarInfoResponse createCar(CarInfoRequest request) {
         Car car = mapper.convertValue(request, Car.class);
+        car.setCreatedAt(LocalDateTime.now());
         car.setStatus(CarStatus.CREATED);
         return mapper.convertValue(carRepository.save(car), CarInfoResponse.class);
     }
@@ -48,10 +50,11 @@ public class CarService {
     }
 
     private Car getCarById(Long id) {
-        return carRepository.findById(id).orElseThrow(()-> new CustomException("Car not found", HttpStatus.NOT_FOUND));//попробовать добавить id
+        return carRepository.findById(id)
+                .orElseThrow(()-> new CustomException("Car not found", HttpStatus.NOT_FOUND));//попробовать добавить id
     }
 
-    public CarInfoResponse updateCar(Long id, CarInfoResponse request) {
+    public CarInfoResponse updateCar(Long id, CarInfoRequest request) {
 
         Car car = getCarById(id);
 
@@ -91,7 +94,6 @@ public class CarService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(content, pageRequest, all.getTotalElements());
-
     }
 
     public void addCarToUser(@Valid CarToUserRequest request) {
@@ -105,10 +107,6 @@ public class CarService {
 
         car.setUser(userFromDB);
         carRepository.save(car);
-    }
-
-    public Car getSomeCar(){
-        return carRepository.getSomeCar(true);
     }
 
     public List <CarInfoResponse> getCarsByUser(Long id) {

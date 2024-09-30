@@ -25,18 +25,6 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(name = "created_at")
-    @CreationTimestamp
-    LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    LocalDateTime updatedAt;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    CarStatus status;
-
     @Column(name = "brand")
     String brand;
 
@@ -55,6 +43,18 @@ public class Car {
 
     @Column(name = "is_new")
     Boolean isNew;
+
+    @Column(name = "created_at")
+    @CreationTimestamp
+    LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    CarStatus status;
 
     @ManyToOne
     @JsonBackReference(value = "driver_cars")
